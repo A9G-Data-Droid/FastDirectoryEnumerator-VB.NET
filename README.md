@@ -17,22 +17,20 @@ The .NET Framework's Directory class includes methods for querying the list of f
 
 Let's assume you are writing an application that needs to find the most recently modified file in a directory. To implement this, you might have a function similar to the following:
 
-    DateTime GetLastFileModifiedSlow(string dir)
-    {
-        DateTime retval = DateTime.MinValue;
-        
-        string [] files = Directory.GetFiles(dir);
-        for (int i=0; i<files.Length; i++)
-        {
-            DateTime lastWriteTime = File.GetLastWriteTime(files[i]);
-            if (lastWriteTime > retval)
-            {
-                retval = lastWriteTime;
-            }
-        }
-        
-        return retval;
-    }
+    Private Function GetLastFileModifiedSlow(ByVal dir As String) As DateTime
+        Dim retval As DateTime = DateTime.MinValue
+        Dim files As String() = Directory.GetFiles(dir)
+
+        For i As Integer = 0 To files.Length - 1
+            Dim lastWriteTime As DateTime = File.GetLastWriteTime(files(i))
+
+            If lastWriteTime > retval Then
+                retval = lastWriteTime
+            End If
+        Next
+
+        Return retval
+    End Function
 
 That function certainly works, but it suffers from some very poor performance characteristics:
 
@@ -42,23 +40,19 @@ That function certainly works, but it suffers from some very poor performance ch
 
 You might think that converting to DirectoryInfo.GetFileSystemInfos would improve item #3:
 
-    DateTime GetLastFileModifiedSlow2(string dir)
-    {
-        DateTime retval = DateTime.MinValue;
-        
-        DirectoryInfo dirInfo = new DirectoryInfo(dir);
+    Private Function GetLastFileModifiedSlow2(ByVal dir As String) As DateTime
+        Dim retval As DateTime = DateTime.MinValue
+        Dim dirInfo As DirectoryInfo = New DirectoryInfo(dir)
+        Dim files As FileInfo() = dirInfo.GetFiles()
 
-        FileInfo[] files = dirInfo.GetFiles();
-        for (int i=0; i<files.Length; i++)
-        {
-            if (files[i].LastWriteTime > retval)
-            {
-                retval = lastWriteTime;
-            }
-        }
-        
-        return retval;
-    }
+        For i As Integer = 0 To files.Length - 1
+            If files(i).LastWriteTime > retval Then
+                retval = lastWriteTime
+            End If
+        Next
+
+        Return retval
+    End Function
 
 This doesn't change anything however: the objects returned by GetFiles() are not initialized with any data, and will all query the file system the first time any property is accessed.
 
@@ -66,21 +60,18 @@ This doesn't change anything however: the objects returned by GetFiles() are not
 
 The attached test application includes the FastDirectoryEnumerator class in FastDirectoryEnumerator.cs. Using the GetFiles method, we can write the equivalent of our first slow method.
 
-    DateTime GetLastFileModifiedFast(string dir)
-    {
-        DateTime retval = DateTime.MinValue;
-        
-        FileData [] files = FastDirectoryEnumerator.GetFiles(dir);
-        for (int i=0; i<files.Length; i++)
-        {
-            if (files[i].LastWriteTime > retval)
-            {
-                retval = lastWriteTime;
-            }
-        }
-        
-        return retval;
-    }
+    Private Function GetLastFileModifiedFast(ByVal dir As String) As DateTime
+        Dim retval As DateTime = DateTime.MinValue
+        Dim files As FileData() = FastDirectoryEnumerator.GetFiles(dir)
+
+        For i As Integer = 0 To files.Length - 1
+            If files(i).LastWriteTime > retval Then
+                retval = lastWriteTime
+            End If
+        Next
+
+        Return retval
+    End Function
 
 The FileData object provides all the standard attributes for a file that the FileInfo class provides.
 
@@ -90,20 +81,17 @@ Use one of the overloads of the EnumerateFiles method to enumerate over all the 
 
 Below is an example of the same method using FastDirectoryEnumerator:
 
-    DateTime GetLastFileModifiedFast(string dir)
-    {
-        DateTime retval = DateTime.MinValue;
+    Private Function GetLastFileModifiedFast(ByVal dir As String) As DateTime
+        Dim retval As DateTime = DateTime.MinValue
 
-        foreach (FileData f in FastDirectoryEnumerator.EnumerateFiles(dir))
-        {
-            if (f.LastWriteTime > retval)
-            {
-                retval = f.LastWriteTime;
-            }
-        }
+        For Each f As FileData In FastDirectoryEnumerator.EnumerateFiles(dir)
+            If f.LastWriteTime > retval Then
+                retval = f.LastWriteTime
+            End If
+        Next
 
-        return retval;
-    }
+        Return retval
+    End Function
 
 ## Performance
 
