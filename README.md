@@ -5,9 +5,11 @@
 ### Original Description
 
 A Faster Directory Enumerator
-Author:  wilsone8
-Date:    2009 Aug 27
-License: CPOL
+
+Author:  wilsone8  
+Date:    2009 Aug 27  
+License: CPOL  
+
 Describes how to create a significantly faster enumerator for the attributes of all the files in a directory.
 
 ## Introduction
