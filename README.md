@@ -1,5 +1,6 @@
 # FastDirectoryEnumerator-VB.NET
  VB.NET version of FastDirectoryEnumerator by wilsone8
+ Taken from https://www.codeproject.com/Articles/38959/A-Faster-Directory-Enumerator
 
 ### Original Description
 
